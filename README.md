@@ -15,8 +15,8 @@ Una app web sin frameworks que arma un `docker-compose.yml` desde un formulario 
 ### 1) Clona y levanta el contenedor
 
 ```sh
-git clone git@github.com:monsterbunx/kompi.git ~/proyectos/kompi
-cd ~/proyectos/kompi
+git clone git@github.com:monsterbunx/kompi.git
+cd kompi
 docker compose up -d
 ```
 
