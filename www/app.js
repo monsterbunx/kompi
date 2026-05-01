@@ -253,6 +253,37 @@
     render();
   });
 
+  const lockBtn = document.getElementById('lock-name');
+  const svcInput = form.querySelector('input[name="serviceName"]');
+  const cnInput = form.querySelector('input[name="containerName"]');
+  const hnInput = form.querySelector('input[name="hostname"]');
+
+  function applyLock(locked) {
+    lockBtn.dataset.locked = String(locked);
+    lockBtn.title = locked
+      ? 'desbloquear: editar container_name y hostname libremente'
+      : 'bloquear: sincroniza container_name y hostname con service name';
+    cnInput.readOnly = locked;
+    hnInput.readOnly = locked;
+    if (locked) {
+      cnInput.value = svcInput.value;
+      hnInput.value = svcInput.value;
+    }
+  }
+
+  lockBtn.addEventListener('click', () => {
+    applyLock(lockBtn.dataset.locked !== 'true');
+    render();
+  });
+
+  svcInput.addEventListener('input', () => {
+    if (lockBtn.dataset.locked === 'true') {
+      cnInput.value = svcInput.value;
+      hnInput.value = svcInput.value;
+    }
+  });
+
   seed();
+  applyLock(true);
   render();
 })();
