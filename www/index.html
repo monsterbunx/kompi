@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>kompi — docker-compose generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">kompi</span>
+      <span class="tag">docker-compose generator</span>
+    </div>
+    <div class="actions">
+      <button type="button" id="btn-reset" class="btn btn-ghost">reset</button>
+      <button type="button" id="btn-copy" class="btn">copy</button>
+      <button type="button" id="btn-download" class="btn btn-primary">download .yml</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <form id="form" class="panel form-panel" autocomplete="off">
+      <fieldset class="card" data-section="basics">
+        <legend>service basics</legend>
+        <div class="grid-2">
+          <label>
+            <span>service name</span>
+            <input type="text" name="serviceName" value="dev" required>
+          </label>
+          <label>
+            <span>image</span>
+            <input type="text" name="image" value="debian:13" list="img-list">
+            <datalist id="img-list">
+              <option value="debian:13">
+              <option value="debian:12">
+              <option value="ubuntu:24.04">
+              <option value="alpine:3.20">
+              <option value="node:22-alpine">
+              <option value="python:3.13-slim">
+              <option value="nginx:alpine">
+              <option value="postgres:17">
+              <option value="redis:7-alpine">
+            </datalist>
+          </label>
+          <label>
+            <span>container_name</span>
+            <input type="text" name="containerName" value="dev">
+          </label>
+          <label>
+            <span>hostname</span>
+            <input type="text" name="hostname" value="dev">
+          </label>
+          <label>
+            <span>restart</span>
+            <select name="restart">
+              <option value="">(none)</option>
+              <option value="no">no</option>
+              <option value="always">always</option>
+              <option value="on-failure">on-failure</option>
+              <option value="unless-stopped" selected>unless-stopped</option>
+            </select>
+          </label>
+          <label>
+            <span>working_dir</span>
+            <input type="text" name="workingDir" placeholder="/app">
+          </label>
+          <label>
+            <span>user</span>
+            <input type="text" name="user" placeholder="1000:1000">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="card" data-section="network">
+        <legend>network</legend>
+        <label>
+          <span>network_mode</span>
+          <select name="networkMode">
+            <option value="">(none)</option>
+            <option value="bridge">bridge</option>
+            <option value="host" selected>host</option>
+            <option value="none">none</option>
+          </select>
+        </label>
+        <div class="dyn" data-dyn="ports">
+          <div class="dyn-head">
+            <span>ports <em>(host:container)</em></span>
+            <button type="button" class="btn btn-ghost btn-sm" data-add="ports">+ add</button>
+          </div>
+          <div class="dyn-list"></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="card" data-section="storage">
+        <legend>volumes</legend>
+        <div class="dyn" data-dyn="volumes">
+          <div class="dyn-head">
+            <span>mounts <em>(./host:/container[:ro])</em></span>
+            <button type="button" class="btn btn-ghost btn-sm" data-add="volumes">+ add</button>
+          </div>
+          <div class="dyn-list"></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="card" data-section="env">
+        <legend>environment</legend>
+        <div class="dyn" data-dyn="environment">
+          <div class="dyn-head">
+            <span>variables <em>(KEY=value)</em></span>
+            <button type="button" class="btn btn-ghost btn-sm" data-add="environment">+ add</button>
+          </div>
+          <div class="dyn-list"></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="card" data-section="caps">
+        <legend>capabilities &amp; privileges</legend>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" name="cap" value="NET_ADMIN"> NET_ADMIN</label>
+          <label class="chk"><input type="checkbox" name="cap" value="SYS_ADMIN"> SYS_ADMIN</label>
+          <label class="chk"><input type="checkbox" name="cap" value="SYS_PTRACE"> SYS_PTRACE</label>
+          <label class="chk"><input type="checkbox" name="cap" value="SYS_TIME"> SYS_TIME</label>
+          <label class="chk"><input type="checkbox" name="cap" value="NET_RAW"> NET_RAW</label>
+          <label class="chk"><input type="checkbox" name="cap" value="IPC_LOCK"> IPC_LOCK</label>
+          <label class="chk"><input type="checkbox" name="cap" value="MKNOD"> MKNOD</label>
+          <label class="chk"><input type="checkbox" name="cap" value="DAC_OVERRIDE"> DAC_OVERRIDE</label>
+        </div>
+        <div class="grid-2">
+          <label class="chk"><input type="checkbox" name="privileged"> privileged</label>
+          <label class="chk"><input type="checkbox" name="stdinOpen"> stdin_open</label>
+          <label class="chk"><input type="checkbox" name="tty"> tty</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="card" data-section="devices">
+        <legend>devices</legend>
+        <div class="dyn" data-dyn="devices">
+          <div class="dyn-head">
+            <span>devices <em>(/dev/x[:/dev/y])</em></span>
+            <button type="button" class="btn btn-ghost btn-sm" data-add="devices">+ add</button>
+          </div>
+          <div class="dyn-list"></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="card" data-section="process">
+        <legend>process</legend>
+        <label>
+          <span>entrypoint</span>
+          <input type="text" name="entrypoint" placeholder='/bin/bash o ["sh","-c","cmd"]'>
+        </label>
+        <label>
+          <span>command</span>
+          <input type="text" name="command" placeholder='/scripts/main.sh o ["sh","-c","cmd"]'>
+        </label>
+      </fieldset>
+    </form>
+
+    <aside class="panel preview-panel">
+      <div class="preview-head">
+        <span>docker-compose.yml</span>
+        <span id="status" class="status">listo</span>
+      </div>
+      <pre class="preview"><code id="yaml-out"></code></pre>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
