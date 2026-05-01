@@ -28,7 +28,7 @@ docker compose up -d
 http://localhost:8080
 ```
 
-El puerto se publica directo en el host porque el contenedor usa `network_mode: host` — sin port mapping.
+El contenedor mapea `8080:8080` al host.
 
 ### 3) Usa el formulario
 
@@ -65,7 +65,7 @@ Empieza cerrado. Click para alternar.
 
 ```
 kompi/
-├── docker-compose.yml    # contenedor 'web' debian:13, network host, monta scripts/ y www/
+├── docker-compose.yml    # contenedor 'web' debian:13, port 8080:8080, monta scripts/ y www/
 ├── scripts/
 │   └── main.sh           # apt update + python3 + http.server :8080
 └── www/
