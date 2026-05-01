@@ -198,16 +198,39 @@
   form.addEventListener('input', render);
   form.addEventListener('change', render);
 
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try { await navigator.clipboard.writeText(text); return true; } catch {}
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    const sel = document.getSelection();
+    const prev = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch {}
+    document.body.removeChild(ta);
+    if (prev) { sel.removeAllRanges(); sel.addRange(prev); }
+    return ok;
+  }
+
   btnCopy.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(lastYaml);
+    const ok = await copyText(lastYaml);
+    if (ok) {
       statusEl.className = 'status copied';
       statusEl.textContent = 'copiado';
       setTimeout(() => {
         statusEl.className = 'status ok';
         statusEl.textContent = 'actualizado';
       }, 1500);
-    } catch {
+    } else {
+      statusEl.className = 'status';
       statusEl.textContent = 'error al copiar';
     }
   });
