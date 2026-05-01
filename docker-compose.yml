@@ -3,7 +3,8 @@ services:
     image: debian:13
     container_name: kompi
     hostname: kompi
-    network_mode: "host"
+    ports:
+      - "8080:8080"
     volumes:
       - ./scripts:/scripts
       - ./www:/www
